@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: clibo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: clibo_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user
+    ports:
+      - "5439:5432"
+    volumes:
+      - clibo_pgdata:/var/lib/postgresql
+
+volumes:
+  clibo_pgdata:
