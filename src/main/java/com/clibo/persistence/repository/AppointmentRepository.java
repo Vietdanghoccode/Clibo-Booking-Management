@@ -12,9 +12,9 @@ import java.util.Optional;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
-    List<Appointment> findByPatientIdAndDateAfter(Long patientId, LocalDate today);
+    List<Appointment> findByPatientIdAndAppointmentTimeAfter(Long patientId, LocalDate today);
 
-    Optional<Appointment> findFirstByPatientPhoneOrderByDateDesc(String phone);
+    Optional<Appointment> findFirstByPatientPhoneOrderByAppointmentTimeDesc(String phone);
 
     List<Appointment> findByDepartmentIdAndAppointmentTimeBetween(
             Long departmentId,

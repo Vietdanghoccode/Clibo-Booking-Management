@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 public class SMSSystem implements ISMSSystem {
     @Override
     public boolean sendOTP(String phoneNumber, String otp) {
-        return true; // test
+        return true;
     }
 
     @Override
