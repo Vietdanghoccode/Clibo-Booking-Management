@@ -1,6 +1,7 @@
 package com.clibo.application;
 
 import com.clibo.domain.profile.Patient;
+import com.clibo.domain.profile.User;
 import com.clibo.dto.RegisterRequest;
 import com.clibo.external.ISMSSystem;
 import com.clibo.persistence.ClinicDBManager;
@@ -10,6 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -38,4 +42,24 @@ public class AuthControl {
 
         return "OTP sent successfully";
     }
+
+    @PostMapping("/verify-otp")
+    public String verifyOTP(@RequestBody Map<String, String> request) {
+        String phone = request.get("phone");
+        String otp = request.get("otp");
+        boolean verified = smsSystem.verifyOTP(otp);
+        if (verified) {
+            Optional<User> userOpt = dbManager.findUserByPhone(phone);
+            if (userOpt.isPresent() && userOpt.get() instanceof Patient patient) {
+                patient.setVerified(true);
+                dbManager.save(patient);
+                return "OTP verified successfully";
+            } else {
+                return "Patient not found";
+            }
+        } else {
+            return "Invalid OTP";
+        }
+    }
+    
 }
