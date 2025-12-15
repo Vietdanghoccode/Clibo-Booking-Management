@@ -37,10 +37,7 @@ public class Appointment {
 
     private boolean checkedIn;
 
-    public void checkIn() {
-        if (this.checkedIn) {
-            throw new IllegalStateException("Already checked in");
-        }
-        this.checkedIn = true;
+    public boolean isCheckIn() {
+        return checkedIn;
     }
 }

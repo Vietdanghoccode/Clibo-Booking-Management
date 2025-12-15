@@ -14,8 +14,4 @@ public class Patient extends User {
 
     private boolean verified;
     private String bankInfo;
-
-    public boolean isVerified() {
-        return verified;
-    }
 }

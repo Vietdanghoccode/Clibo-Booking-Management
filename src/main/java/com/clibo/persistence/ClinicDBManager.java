@@ -1,15 +1,14 @@
 package com.clibo.persistence;
 
 import com.clibo.domain.appointment.*;
-import com.clibo.domain.medical.MedicalRecord;
+import com.clibo.domain.medical.*;
 import com.clibo.domain.profile.Patient;
 import com.clibo.domain.profile.Doctor;
-import com.clibo.domain.medical.TestRequest;
-import com.clibo.domain.medical.TestResult;
 import com.clibo.domain.profile.User;
 import com.clibo.dto.AppointmentSlot;
 import com.clibo.persistence.repository.*;
 
+import com.clibo.utils.CodeGenerator;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -36,6 +35,8 @@ public class ClinicDBManager {
     private final MedicalRecordRepository medicalRecordRepo;
     private final PaymentRepository paymentRepo;
     private final AdministratorRepository adminRepo;
+    private final UserRepository userRepo;
+    private final TestCatalogRepository testCatalogRepo;
 
     public ClinicDBManager(
             AppointmentRepository appointmentRepo,
@@ -45,7 +46,7 @@ public class ClinicDBManager {
             TestResultRepository testResultRepo,
             MedicalRecordRepository medicalRecordRepo,
             PaymentRepository paymentRepo,
-            AdministratorRepository adminRepo
+            AdministratorRepository adminRepo, UserRepository userRepo, TestCatalogRepository testCatalogRepo
     ) {
         this.appointmentRepo = appointmentRepo;
         this.patientRepo = patientRepo;
@@ -55,6 +56,9 @@ public class ClinicDBManager {
         this.medicalRecordRepo = medicalRecordRepo;
         this.paymentRepo = paymentRepo;
         this.adminRepo = adminRepo;
+        this.userRepo = userRepo;
+
+        this.testCatalogRepo = testCatalogRepo;
     }
 
     public Optional<User> findUserByPhone(String phoneNumber) {
@@ -73,6 +77,10 @@ public class ClinicDBManager {
         return Optional.empty();
     }
 
+    public Patient createPatient(Patient patient) {
+        return patientRepo.save(patient);
+    }
+
     public Appointment save(Appointment appointment) {
         return appointmentRepo.save(appointment);
     }
@@ -88,6 +96,8 @@ public class ClinicDBManager {
     public Patient save(Patient patient) {
         return patientRepo.save(patient);
     }
+
+    public void save(User user) { userRepo.save(user); }
 
 
 
@@ -114,33 +124,29 @@ public class ClinicDBManager {
 
     public Optional<User> getUserInformation(String phoneNumber) {
 
-        Optional<? extends User> user;
+        Optional<User> user = patientRepo.findByPhone(phoneNumber).map(p -> p);
+        if (user.isPresent()) return user;
 
-        user = patientRepo.findByPhone(phoneNumber);
-        if (user.isPresent()) return Optional.of(user.get());
+        user = doctorRepo.findByPhone(phoneNumber).map(d -> d);
+        if (user.isPresent()) return user;
 
-        user = doctorRepo.findByPhone(phoneNumber);
-        if (user.isPresent()) return Optional.of(user.get());
-
-        user = adminRepo.findByPhone(phoneNumber);
-        if (user.isPresent()) return Optional.of(user.get());
-
-        return Optional.empty();
+        return adminRepo.findByPhone(phoneNumber).map(a -> a);
     }
 
     /* =========================
        Appointment
        ========================= */
     public List<Appointment> getUpcomingAppointment(Long patientId) {
-        return appointmentRepo.findByPatientIdAndDateAfter(patientId, LocalDate.now());
+        return appointmentRepo.findByPatientIdAndAppointmentTimeAfter(patientId, LocalDate.now());
     }
 
     public Optional<Appointment> getAppointmentInfoByPhone(String phone) {
-        return appointmentRepo.findFirstByPatientPhoneOrderByDateDesc(phone);
+        return appointmentRepo.findFirstByPatientPhoneOrderByAppointmentTimeDesc(phone);
     }
 
-    public Appointment saveAppointment(Appointment appointment) {
-        return appointmentRepo.save(appointment);
+    public Appointment getAppointment(Long appointmentId) {
+        return appointmentRepo.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
     }
 
     /* =========================
@@ -210,14 +216,6 @@ public class ClinicDBManager {
         return medicalRecordRepo.findByPatientId(patientId);
     }
 
-    public Optional<MedicalRecord> getMedicalRecord(Long recordId) {
-        return medicalRecordRepo.findById(recordId);
-    }
-
-    public Optional<MedicalRecord> getMedicalRecordByAppointment(Long appointmentId) {
-        return medicalRecordRepo.findByAppointment_Id(appointmentId);
-    }
-
     /* =========================
        Test
        ========================= */
@@ -230,7 +228,91 @@ public class ClinicDBManager {
         return testResultRepo.findById(id);
     }
 
-    public List<TestResult> getTestResultsByAppointment(Long appointmentId) {
-        return testResultRepo.findByAppointmentId(appointmentId);
+    public MedicalRecord getOrCreateMedicalRecord(Appointment appointment, Patient patient, Doctor doctor) {
+        return medicalRecordRepo
+                .findByAppointmentId(appointment.getId())
+                .orElseGet(() -> {
+                    MedicalRecord record = new MedicalRecord();
+                    record.setAppointment(appointment);
+                    record.setPatient(patient);
+                    record.setDoctor(doctor);
+                    return medicalRecordRepo.save(record);
+                });
     }
+
+    public MedicalRecord getMedicalRecord(Long id) {
+        return medicalRecordRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Medical record not found"));
+    }
+
+
+
+    public void createTestRequests(Appointment appointment, List<String> testNames) {
+        for (String testName : testNames) {
+            TestRequest tr = new TestRequest();
+            tr.setAppointment(appointment);
+            tr.setStatus(TestStatus.REQUESTED);
+
+            testRequestRepo.save(tr);
+        }
+    }
+
+    public Appointment checkInAppointment(Long appointmentId, String phone, String cid) {
+        Appointment appointment = appointmentRepo.findById(appointmentId).orElseThrow(() ->
+                new RuntimeException("Appointment not found"));
+
+        if (appointment.isCheckIn()) {
+            throw new RuntimeException("Appointment already checked in");
+        }
+
+        appointment.setCheckedIn(true);
+
+        appointmentRepo.save(appointment);
+
+        return appointment;
+    }
+
+    public Optional<MedicalRecord> getMedicalRecordByAppointment(Long appointmentId) {
+        return medicalRecordRepo.findByAppointmentId(appointmentId);
+    }
+
+    public List<TestResult> getTestResultsByAppointment(Long appointmentId) {
+        return testResultRepo.findAllByAppointmentId(appointmentId);
+    }
+
+    public List<TestCatalog> getTestCatalogs() {
+        return testCatalogRepo.findAll(); // demo
+    }
+
+    @Transactional
+    public List<TestRequest> createTests(List<Long> ids, Long appointmentId) {
+        Appointment appointment = appointmentRepo.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("No appointment found"));
+
+        List<TestCatalog> catalogs = testCatalogRepo.findAllById(ids);
+
+        if (catalogs.size() != ids.size()) {
+            throw new RuntimeException("Some test catalogs not found");
+        }
+
+        List<TestRequest> requests = new ArrayList<>();
+
+
+
+        for (int i = 0; i < ids.size(); i++) {
+            TestRequest request = new TestRequest();
+
+            request.setTestRequestCode(CodeGenerator.generateTestRequestCode());
+            request.setAppointment(appointment);
+            request.setTestCatalog(catalogs.get(i));
+            request.setStatus(TestStatus.REQUESTED);
+        }
+
+        testRequestRepo.saveAll(requests);
+
+        return requests;
+    }
+
+
+
 }

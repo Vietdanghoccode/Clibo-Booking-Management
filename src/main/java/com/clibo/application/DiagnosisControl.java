@@ -20,7 +20,7 @@ import com.clibo.persistence.ClinicDBManager;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/api/diagnosis")
+@RequestMapping("/diagnosis")
 @AllArgsConstructor
 public class DiagnosisControl {
 
@@ -68,7 +68,7 @@ public class DiagnosisControl {
         dbManager.save(medicalRecord);
 
         appointment.setStatus(AppointmentStatus.COMPLETED);
-        dbManager.saveAppointment(appointment);
+        dbManager.save(appointment);
 
         return "Diagnosis saved and appointment completed";
     }

@@ -8,7 +8,7 @@ import com.clibo.external.ISMSSystem;
 public class SMSSystem implements ISMSSystem {
     @Override
     public boolean sendOTP(String phoneNumber, String otp) {
-        return true; // test
+        return true;
     }
 
     @Override

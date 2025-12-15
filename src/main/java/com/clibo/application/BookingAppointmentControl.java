@@ -35,7 +35,6 @@ public class BookingAppointmentControl {
         return clinicDBManager.getAvailableSlots(departmentId, date);
     }
 
-    /* UC 2.1 checkSlotAgain + create */
     @PostMapping
     @ResponseBody
     public ResponseEntity<?> confirmBooking(
