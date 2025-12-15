@@ -214,6 +214,10 @@ public class ClinicDBManager {
         return medicalRecordRepo.findById(recordId);
     }
 
+    public Optional<MedicalRecord> getMedicalRecordByAppointment(Long appointmentId) {
+        return medicalRecordRepo.findByAppointment_Id(appointmentId);
+    }
+
     /* =========================
        Test
        ========================= */
@@ -224,5 +228,9 @@ public class ClinicDBManager {
 
     public Optional<TestResult> getTestResult(Long id) {
         return testResultRepo.findById(id);
+    }
+
+    public List<TestResult> getTestResultsByAppointment(Long appointmentId) {
+        return testResultRepo.findByAppointmentId(appointmentId);
     }
 }
