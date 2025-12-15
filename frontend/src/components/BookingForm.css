@@ -1,0 +1,160 @@
+.booking-container {
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Để căn giữa theo chiều dọc nếu trang ngắn */
+  min-height: 100vh;
+  background-color: #f0f2f5;
+  padding: 2rem 1rem;
+}
+
+.booking-card {
+  background: white;
+  width: 100%;
+  max-width: 600px; /* Rộng hơn form login một chút */
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.booking-card h2 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.booking-card .subtitle {
+  text-align: center;
+  color: #7f8c8d;
+  margin-bottom: 2rem;
+}
+
+.form-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed #e0e0e0;
+}
+
+.form-section h3 {
+  font-size: 1.1rem;
+  color: #34495e;
+  margin-bottom: 1rem;
+  border-left: 4px solid #007bff;
+  padding-left: 10px;
+}
+
+/* Layout 2 cột cho màn hình lớn */
+.input-row {
+  display: flex;
+  gap: 15px;
+}
+
+.input-row .form-group {
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #fff;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+/* Grid cho các nút giờ (Time Slots) */
+.time-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.time-btn {
+  padding: 8px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.time-btn:hover {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.time-btn.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  font-weight: bold;
+}
+
+/* Nút Submit */
+.booking-btn {
+  background-color: #28a745; /* Màu xanh lá cho hành động booking */
+  margin-top: 1rem;
+}
+
+.booking-btn:hover {
+  background-color: #218838;
+}
+
+.booking-btn:disabled {
+  background-color: #95c9a0;
+  cursor: not-allowed;
+}
+
+/* Màn hình thành công */
+.success-card {
+  text-align: center;
+  max-width: 450px;
+}
+
+.success-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.reset-btn {
+  margin-top: 2rem;
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid #007bff;
+  color: #007bff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.reset-btn:hover {
+  background: #f0f8ff;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 600px) {
+  .input-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}
