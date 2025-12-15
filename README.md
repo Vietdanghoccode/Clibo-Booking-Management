@@ -23,21 +23,21 @@ Cho phép bệnh nhân mới tạo tài khoản nhanh chóng để sử dụng d
 
 #### Đặt lịch khám (Booking Appointment)
 Bệnh nhân tìm kiếm bác sĩ, chọn chuyên khoa và khung giờ trống để đặt lịch hẹn.
-![Giao diện Đặt lịch khám](images/booking.png)
+![Giao diện Đặt lịch khám](images/patient.png)
 
 ### 3. Dành cho Bác sĩ (Doctor Workflow)
 
 #### Chỉ định xét nghiệm (Test Requests)
 Bác sĩ xem hồ sơ bệnh án và đưa ra danh sách các xét nghiệm cần thiết từ danh mục có sẵn.
-![Danh sách chỉ định xét nghiệm](images/test_list.png)
+![Danh sách chỉ định xét nghiệm](images/conduct.png)
 
 #### Nhập kết quả xét nghiệm (Test Results Input)
 Giao diện cập nhật chi tiết các chỉ số kết quả sau khi thực hiện xét nghiệm.
-![Giao diện Nhập kết quả](images/test_result.png)
+![Giao diện Nhập kết quả](images/submit.png)
 
 #### Chẩn đoán & Kết luận (Diagnosis)
 Bác sĩ tổng hợp thông tin lâm sàng và cận lâm sàng để đưa ra chẩn đoán cuối cùng và hướng điều trị.
-![Giao diện Chẩn đoán kết quả](images/diagnosis.png)
+![Giao diện Chẩn đoán kết quả](images/diagnose.png)
 
 ---
 
