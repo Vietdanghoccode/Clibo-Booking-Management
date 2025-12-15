@@ -35,7 +35,7 @@ public class BookingAppointmentControl {
         return clinicDBManager.getAvailableSlots(departmentId, date);
     }
 
-    @PostMapping
+    @PostMapping("/confirm")
     @ResponseBody
     public ResponseEntity<?> confirmBooking(
             Long departmentId,
